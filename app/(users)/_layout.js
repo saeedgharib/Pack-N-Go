@@ -1,77 +1,115 @@
-import { Tabs } from 'expo-router';
+import { Stack, usePathname } from 'expo-router'
+import { Drawer} from 'expo-router/drawer'
+import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
+import React, { useEffect } from 'react'
+import { View,StyleSheet,Text, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable } from 'react-native';
-import { useAuth} from '@clerk/clerk-expo';
-import { BlurView } from 'expo-blur';
-import { StyleSheet } from 'react-native';
-export const LogoutButton = () => {
-  const { signOut } = useAuth();
+import { useUser } from '@clerk/clerk-expo';
+import { router } from 'expo-router';
 
-  const doLogout = () => {
-    signOut();
-  };
 
-  return (
-    <Pressable onPress={doLogout} style={{ marginRight: 10 }}>
-      <Ionicons name="log-out-outline" size={24} color={'#fff'} />
-    </Pressable>
-  );
-};
 
-const TabsPage = () => {
-  const { isSignedIn } = useAuth();
+const CustomDrawerContent = (props) => {
+  const pathname =usePathname();
+  const {user}=useUser()
+  useEffect(() => {
+    console.log(pathname);
+  }, [pathname]);
+
+
 
   return (
-    <Tabs
-      screenOptions={{
-        headerStyle: {
-         
-        //   backgroundColor: 'lightgreen',
-        },
-        headerBackground:()=>(
-            <BlurView
-intensity={90}
-style={{
-... StyleSheet.absoluteFillObject,
-borderTopLeftRadius: 20,
-borderTopRightRadius: 20,
-overflow: "hidden",
-backgroundColor: "transparent",
-}}
-/>
-        ),
-        headerTintColor: '#fff',
-        tabBarActiveTintColor:'green',
-      }}>
-      <Tabs.Screen
-        name="UserHomePage"
-        options={{
-        
-        //   headerStyle:{opacity:500},
-          headerTitle: 'Home',
-          tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
-          tabBarLabel: 'Home',
-          headerRight: () => <Ionicons name='person-circle' size={42} color='white' />
-                  }}
-        redirect={!isSignedIn}
+
+    <DrawerContentScrollView {...props}>
+      <View style={styles.userInfoWrapper}>
+       
+        <View style={styles.userDetailsWrapper}>
+          <Text style={styles.userName}>{user?.firstName+" "+user?.lastName}</Text>
+          <Text style={styles.userEmail}>{user?.emailAddresses[0].emailAddress}</Text>
+        </View>
+      </View>
+      
+      <DrawerItem
+        icon={({ color, size }) => (
+          <Ionicons
+            name="list"
+            size={size}
+            color={pathname == "/(tabs)" ? "#fff" : "#000"}
+          />
+        )}
+        label={"Home"}
+        labelStyle={[
+          styles.navItemLabel,
+          { color: pathname == '/(tabs)' ? "#fff" : "#000" },
+        ]}
+        style={{ backgroundColor: pathname == '/(tabs)' ? "#333" : "#fff" }}
+        onPress={() => {
+          router.push("UserHomePage");
+        }} 
       />
-      <Tabs.Screen
-        name='Profile/[id]'
+      {/* <DrawerItem
+        icon={({ color, size }) => (
+          <Ionicons
+            name="list"
+            size={size}
+            color={pathname == "../Profile/Profile" ? "#fff" : "#000"}
+          />
+        )}
+        label={"Profile"}
+        labelStyle={[
+          styles.navItemLabel,
+          { color: pathname == "../Profile/Profile" ? "#fff" : "#000" },
+        ]}
         
-        options={{
-          href:{
-            pathname:'Profile/[id]',
-            params:{id:1}
-          },
-          headerTitle: 'My Profile',
-          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
-          tabBarLabel: 'My Profile',
-          headerRight: () => <LogoutButton />,
-        }}
-        redirect={!isSignedIn}
-      />
-    </Tabs>
+        style={{ backgroundColor: pathname == "../Profile/Profile" ? "#333" : "#fff" }}
+        onPress={() => {
+          router.push("Profile")
+        }} 
+      /> */}
+      
+     
+      
+    </DrawerContentScrollView>
   );
 };
+const Layout = () => {
+  return (
+    <Drawer drawerContent={(props)=> <CustomDrawerContent {...props}/>} screenOptions={{headerShown:false}} >
+      
+    </Drawer>
+  )
+}
 
-export default TabsPage;
+export default Layout
+
+
+const styles = StyleSheet.create({
+  navItemLabel: {
+    marginLeft: -20,
+    fontSize: 18,
+  },
+  userInfoWrapper: {
+    flexDirection: "row",
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+    marginBottom: 10,
+  },
+  userImg: {
+    borderRadius: 40,
+  },
+  userDetailsWrapper: {
+    marginTop: 25,
+    marginLeft: 10,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  userEmail: {
+    fontSize:16,
+    fontStyle: 'italic',
+    textDecorationLine: 'underline',
+  }
+});

@@ -1,12 +1,18 @@
 import React from 'react'
-import { Text, View } from 'react-native'
+import AdminDashboard from '../../components/HomePages/AdminDashboard'
+
+// import Admin from '../../components/HomePages/Admin';
+
+
 
 const AdminHomePage = () => {
+ {/* <Admin /> */}
+
   return (
-    <View>
-        <Text>Admin Home</Text>
-    </View>
+
+<AdminDashboard/>
   )
 }
 
 export default AdminHomePage
+ 

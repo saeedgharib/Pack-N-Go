@@ -19,8 +19,8 @@ const LoginForm=({register,guide,reset}) =>{
     if (!isLoaded) {
       return;
     }
-    setLoading(true);
     try {
+      setLoading(true);
       const completeSignIn = await signIn.create({
         identifier: emailAddress,
         password: password,
@@ -28,7 +28,7 @@ const LoginForm=({register,guide,reset}) =>{
 
       await setActive({ session: completeSignIn.createdSessionId });
     } catch (err) {
-      alert(err)
+      alert("Email or Password is incorrect")
     } finally {
       setLoading(false);
     }

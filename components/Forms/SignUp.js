@@ -224,7 +224,7 @@ const SignupForm = () => {
                 }}
                 color={isDriverChecked ? "#4630EB" : undefined}
               />
-              <Text>driver</Text>
+              <Text>Movers</Text>
             </View>
           </View>
   

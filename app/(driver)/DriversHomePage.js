@@ -17,7 +17,7 @@ useEffect(() => {
   return (
     <View>
         <Text>Driver Home {user.emailAddresses[0].emailAddress}</Text>
-        <Link href='https://assured-alpaca-88.accounts.dev/user'>
+        <Link href='https://dashboard.clerk.com/apps/app_2hbRILyqSrfeoLXGWFG6Qw9zIXO/instances/ins_2hbRIPdiJhjqrmafcwngs8Rz2YS'>
               <Text>Go to profile dash</Text>
         </Link>
         <IconButton
