@@ -1,10 +1,11 @@
-import { Tabs } from 'expo-router';
+import { router, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
-import { useAuth} from '@clerk/clerk-expo';
-export const LogoutButton = () => {
-  const { signOut } = useAuth();
+import { useAuth, useUser} from '@clerk/clerk-expo';
+import { useEffect } from 'react';
 
+export const LogoutButton = () => {
+  const {signOut} = useAuth()
   const doLogout = () => {
     signOut();
   };
@@ -16,9 +17,11 @@ export const LogoutButton = () => {
   );
 };
 
+
 const TabsPage = () => {
   const { isSignedIn } = useAuth();
-
+const {user}=useUser();
+ 
   return (
     <Tabs
       screenOptions={{
@@ -26,6 +29,7 @@ const TabsPage = () => {
           backgroundColor: '#6c47ff',
         },
         headerTintColor: '#fff',
+        headerRight:()=>{return<LogoutButton/>}
       }}>
       <Tabs.Screen
         name="DriversHomePage"
@@ -33,7 +37,7 @@ const TabsPage = () => {
           headerTitle: 'Home',
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
           tabBarLabel: 'Home',
-        //   headerRight: () => <UserButton/>,
+          
         }}
         redirect={!isSignedIn}
       />

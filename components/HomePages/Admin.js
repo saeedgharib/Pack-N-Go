@@ -3,7 +3,7 @@ import { View,ScrollView,FlatList,Image ,StyleSheet, Pressable,TouchableOpacity}
 import { useUser } from '@clerk/clerk-expo'
 import { getDocs,collection } from 'firebase/firestore';
 import DB from '../../database/firebaseConfig';
-import { Card, Text, Title, DataTable, Button, Divider } from 'react-native-paper';
+import { Card, Text, Title, DataTable, Button, Divider ,Paragraph,Avatar} from 'react-native-paper';
 import { Link, router } from 'expo-router';
 import { Ionicons,FontAwesome } from '@expo/vector-icons';
 
@@ -41,12 +41,42 @@ const UserCard = ({ person, onDelete, onBan }) => {
     >
   <Pressable onPress={()=>{router.push({pathname:'[userid]',params:{userId:person?.id}})}}>
 
-      <View style={styles.card}>
+      {/* <View style={styles.card}>
       <Image  source={{uri:person?.image_url}} style={{height:30,width:30, borderRadius:50}}  />
         <Text style={styles.cardText}>{"  "+person.first_name+" "+person.last_name} </Text>
         <Text style={{color:'blue'}}>{"          "+person.email_addresses[0]?.email_address }</Text>
         
-      </View>
+      </View> */}
+      <View style={styles.container}>
+      <Card style={styles.card}>
+        <Card.Title
+          // style={{flexDirection: 'row', alignItems: 'center'}}
+  titleStyle={{width:'90rem'}} // Allow wrapping of the text
+  subtitleStyle={{}}
+
+          title={`${person.first_name} ${person.last_name}` }
+          subtitle={`Email: ${person.email_addresses[0]?.email_address}`}
+          left={() => (
+            // <Avatar.Image
+            //   size={100}
+            //   source={{ uri: person.image_url|| 'https://www.gravatar.com/avatar?d=mp' }}
+            //   style={styles.avatar}
+            // />
+            <Image  source={{uri:person?.image_url}} style={{height:50,width:50, borderRadius:50}}  />
+          )}
+        />
+        <Card.Content>
+          <Title>Account Information</Title>
+          <Paragraph>Created At: {new Date(person.created_at).toLocaleDateString()}</Paragraph>
+          <Paragraph>Last Active: {new Date(person.last_active_at).toLocaleDateString()}</Paragraph>
+          <Paragraph>Last Sign-In: {new Date(person.last_sign_in_at).toLocaleDateString()}</Paragraph>
+          <Paragraph>Role: {person.unsafe_metadata.role}</Paragraph>
+        </Card.Content>
+        <Card.Actions>
+          {/* <Text style={styles.status}>Image Available: {has_image ? 'Yes' : 'No'}</Text> */}
+        </Card.Actions>
+      </Card>
+    </View>
 </Pressable>
     </Swipeable>
     :null
@@ -90,15 +120,9 @@ const fetchUsers = async () => {
 
 const fetchCompanies = async () => {
     try {
-    //   const companySnapshot = await firestore.collection('companies').get();
-    //   const companyData = companySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    //   console.log("Company Data: ", companyData); // Debugging
-    //   setCompanies(companyData);
-
+    
       const querySnapshot = await getDocs(collection(DB,"companies"));
-//       const companyData =  querySnapshot.forEach((doc) => {
-//   doc.id, " => ", doc.data()
-// })
+
 const companyData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 console.log("Company Data: ", companyData);
 setCompanies(companyData);
@@ -280,4 +304,12 @@ const styles = StyleSheet.create({
       color: '#fff',
       fontWeight: 'bold',
     },
+
+
+  avatar: {
+    margin: 8,
+  },
+
+
+  
   });

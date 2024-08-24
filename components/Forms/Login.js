@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useSignIn } from '@clerk/clerk-expo';
+import { useAuth, useSignIn } from '@clerk/clerk-expo';
 import { View, StyleSheet, TextInput, Button, Pressable, Text, Alert,Image,SafeAreaView,Platform } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import {Link, router} from 'expo-router'
@@ -10,27 +10,32 @@ const logo = require("../../assets/images/logo.jpg")
 const LoginForm=({register,guide,reset}) =>{
 
   const { signIn, setActive, isLoaded } = useSignIn();
-
+const {isSignedIn} = useAuth()
   const [emailAddress, setEmailAddress] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const onSignInPress = async () => {
+    setLoading(true);
     if (!isLoaded) {
       return;
     }
     try {
-      setLoading(true);
       const completeSignIn = await signIn.create({
         identifier: emailAddress,
         password: password,
       });
-
-      await setActive({ session: completeSignIn.createdSessionId });
+      try {
+        await setActive({ session: completeSignIn.createdSessionId });
+        setLoading(false);
+        
+      } catch (error) {
+        
+      }
+      console.log(isSignedIn);
+      
     } catch (err) {
       alert("Email or Password is incorrect")
-    } finally {
-      setLoading(false);
     }
   };
     

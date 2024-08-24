@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet ,View,Text} from 'react-native';
 import { TextInput, Button, Avatar, Appbar } from 'react-native-paper';
 import {  Card, Title, Paragraph } from 'react-native-paper';
 
-const EditUserProfile = () => {
+const  ViewMoverProfile = () => {
     const {userId} =useLocalSearchParams()
     
 console.log(userId);
@@ -48,25 +48,7 @@ const key ='sk_test_CPes7EdioH5zt6FigGv5cN9hovQextyohqQam2xwAB';
     }
   };
 
-  const handleChange = (field, value) => {
-    setUserData({ ...userData, [field]: value });
-  };
-
-  const handleUpdate = async () => {
-    try {
-      await fetch(`YOUR_API_ENDPOINT/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-      console.log('User data updated successfully');
-    } catch (error) {
-      console.error('Failed to update user data:', error);
-    }
-  };
-
+  
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -74,46 +56,7 @@ const key ='sk_test_CPes7EdioH5zt6FigGv5cN9hovQextyohqQam2xwAB';
   return (
     <ScrollView contentContainerStyle={styles.container}>
       
-      <Avatar.Image 
-        size={120} 
-        source={{ uri: userData.imageUrl }} 
-        style={styles.avatar} 
-      />
-      <TextInput
-        label="First Name"
-        value={userData.firstName}
-        onChangeText={(text) => handleChange('firstName', text)}
-        mode="outlined"
-        style={styles.input}
-      />
-      <TextInput
-        label="Last Name"
-        value={userData.lastName}
-        onChangeText={(text) => handleChange('lastName', text)}
-        mode="outlined"
-        style={styles.input}
-      />
-      <TextInput
-        label="Email"
-        value={userData.email}
-        onChangeText={(text) => handleChange('email', text)}
-        mode="outlined"
-        keyboardType="email-address"
-        style={styles.input}
-      />
-      <TextInput
-        label="Role"
-        value={userData.role}
-        onChangeText={(text) => handleChange('role', text)}
-        mode="outlined"
-        style={styles.input}
-      />
-      <Button 
-        mode="contained" 
-        onPress={handleUpdate} 
-        style={styles.button}>
-        Update
-      </Button>
+     
     </ScrollView>
     
   );
@@ -137,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditUserProfile;
+export default ViewMoverProfile;

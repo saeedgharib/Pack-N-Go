@@ -1,13 +1,24 @@
 import React from 'react'
 import { StyleSheet,  View, Image, TouchableOpacity, ScrollView } from 'react-native'
 import { Card, Text, Title, DataTable, Button, Divider } from 'react-native-paper';
-import { useUser } from '@clerk/clerk-expo'
+import { useAuth, useUser } from '@clerk/clerk-expo'
 import { router } from 'expo-router';
-
+import { Redirect } from 'expo-router';
 
 export default AdminDashboard = () => {
     const {user}=useUser();
-        
+    const { signOut } = useAuth()
+    const { isSignedIn } = useAuth();
+  
+    console.log(isSignedIn);
+    
+  
+    const doLogout = async() => {
+      
+      await signOut()
+      // router.replace("/public/Login");
+      console.log("User logged out");
+    };
       return (
     <ScrollView>
 <View style={{ padding: 20 }}>
@@ -25,7 +36,7 @@ export default AdminDashboard = () => {
         <Text style={styles.info}>Manage Users</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuBox}>
+      <TouchableOpacity style={styles.menuBox} onPress={()=>router.push('/ManageMovers')}>
         <Image
           style={styles.icon}
           source={{ uri: 'https://img.icons8.com/color/70/000000/administrator-male.png' }}
@@ -33,7 +44,7 @@ export default AdminDashboard = () => {
         <Text style={styles.info}>Manage Movers</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuBox}>
+      <TouchableOpacity style={styles.menuBox} onPress={()=>router.push('Stats' )}>
         <Image
           style={styles.icon}
           source={{ uri: 'https://img.icons8.com/color/70/000000/pie-chart.png' }}
@@ -81,12 +92,12 @@ export default AdminDashboard = () => {
         <Text style={styles.info}>Profile</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuBox}>
+      <TouchableOpacity style={styles.menuBox} onPress={doLogout}>
         <Image
           style={styles.icon}
-          source={{ uri: 'https://img.icons8.com/?size=100&id=XFOumBmRR5zT&format=png&color=000000' }}
+          source={{ uri: 'https://img.icons8.com/?size=100&id=8119&format=png&color=ffffff' }}
         />
-        <Text style={styles.info}>Review</Text>
+        <Text style={styles.info}>Log Out</Text>
       </TouchableOpacity>
     </View>
     </ScrollView>
@@ -115,6 +126,8 @@ const styles = StyleSheet.create({
   icon: {
     width: 60,
     height: 60,
+    padding:40,
+    marginBottom:20,
   },
   info: {
 
