@@ -31,6 +31,7 @@ import {
     GestureHandlerRootView,
   Swipeable,
 } from "react-native-gesture-handler";
+import StarRating from "./Stars";
 
 const key = "sk_test_CPes7EdioH5zt6FigGv5cN9hovQextyohqQam2xwAB";
 
@@ -59,6 +60,7 @@ const MoverCard = ({ mover, onDelete, onBan }) => {
     </TouchableOpacity>
   );
 
+
   return (
    
         <Swipeable
@@ -76,7 +78,11 @@ const MoverCard = ({ mover, onDelete, onBan }) => {
             <View style={styles.container}>
             <Card key={mover?.id} style={{ margin: 10 }}>
           <Card.Content>
+            <View style={{flex:1,justifyContent:'space-between',alignItems:'center',flexDirection:'row'}}>
             <Title style={{fontWeight:'bold'}}>{mover.companyName}</Title>
+      <StarRating moverRating={mover.rating} />
+      
+    </View>
             <Paragraph style={{fontWeight:'bold'}} >Contact: <Text>{mover.phoneNumber}</Text></Paragraph>
             <Paragraph style={{fontWeight:'bold'}}>Email: <Text style={{color:'blue'}}>{mover.email}</Text></Paragraph>
             <Paragraph style={{fontWeight:'bold'}}>Business License: <Text>{mover.businessLicense}</Text></Paragraph>
@@ -85,13 +91,13 @@ const MoverCard = ({ mover, onDelete, onBan }) => {
           <Card.Actions>
           <TouchableOpacity 
               style={styles.button} 
-              onPress={() => Linking.openURL(company.businessLicenseURL)}
+              onPress={() => Linking.openURL(mover.businessLicenseDoc)}
             >
               <Text style={styles.buttonText}>View Business License</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.button} 
-              onPress={() => Linking.openURL(company.insuranceURL)}
+              onPress={() => Linking.openURL(mover.insuranceDoc)}
             >
               <Text style={styles.buttonText}>View Insurance Document</Text>
             </TouchableOpacity>
@@ -200,12 +206,10 @@ const ManageMovers = () => {
       <View style={{ padding: 20 }}>
       
 
-        <Title>
-          Manage Movers
-        </Title>
-          <Title style={{ fontWeight: "bold", color: "#000" ,position:'absolute',marginTop:10,marginLeft:'60%'}}>
-          <Button icon="plus" mode="outlined" onPress={() => console.log('Pressed')} textColor="black">
-    Movers
+      <Title style={{fontWeight:'bold',color:'#000'}}>Manage Movers</Title>
+      <Title style={{ fontWeight: "bold", color: "#000" ,position:'absolute',marginTop:10,marginLeft:'75%'}}>
+          <Button icon="plus" mode="contained" onPress={() => router.push('AddMover')} textColor="white" style={{backgroundColor:'black'}} >
+    Mover
   </Button>
           </Title>
  
@@ -227,7 +231,7 @@ export default ManageMovers;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
+    backgroundColor: "transparent",
   },
   card1: {
     margin: 10,

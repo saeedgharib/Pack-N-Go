@@ -2,10 +2,11 @@
 import React ,{useEffect,useState}from 'react';
 import { ScrollView, View, Image, StyleSheet,FlatList } from 'react-native';
 import { Text, TextInput,Button,Card,Avatar } from 'react-native-paper';
-import { getDoc,doc, setDoc, collection, addDoc, getDocs, where,query } from 'firebase/firestore';
+import { getDoc,doc, setDoc, collection, addDoc, getDocs, where,query,updateDoc } from 'firebase/firestore';
 import Spinner from 'react-native-loading-spinner-overlay';
 import DB from '../../database/firebaseConfig';
 import { useUser } from '@clerk/clerk-expo';
+import StarRating from './RatingMovers';
 
 const CompanyProfile = ({cardid}) => {
     const badWords = ['shit', 'bad3',"bad1"];
@@ -28,6 +29,7 @@ const CompanyProfile = ({cardid}) => {
    const [Details,setDetails]=useState([])
    const [feedback, setFeedback] = useState('');
    const [feedbackList, setFeedbackList] = useState([]);
+
     const getDetails=async () =>{
         
         const docRef = doc(DB, "companies", cardid);
@@ -41,9 +43,10 @@ const CompanyProfile = ({cardid}) => {
             console.log("No such document!");
           }
     }
+
     const getFeedback=async () =>{
         try {
-            console.log(cardid)
+            console.log("CardID: "+cardid)
             const feedbackQuery = query(collection(DB,'feedback'), where('companyId', '==', cardid));
       const querySnapshot = await getDocs(feedbackQuery);
         const feedbackData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -95,6 +98,10 @@ const CompanyProfile = ({cardid}) => {
         console.log(error)
     }
   };
+
+console.log(Details.username);
+
+
     return (
       
         
@@ -106,8 +113,12 @@ const CompanyProfile = ({cardid}) => {
       </View>
       <Text style={styles.description}>{Details.summary}</Text>
       <Text style={styles.description}>{Details.description}</Text>
-
+      <View style={{justifyContent:'space-between',alignItems:'center',flexDirection:'row'}}>
+           
       <Text style={styles.feedbackTitle}>Feedback:</Text>
+      <StarRating   moverId={Details.id}/>
+      
+    </View>
       <FlatList
         data={feedbackList}
         horizontal={false}

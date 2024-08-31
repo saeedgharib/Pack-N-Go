@@ -42,14 +42,17 @@ const AdminTabsPage = () => {
       title: 'Manage Users',
       
     }} redirect={!isSignedIn} /> 
+
     <Stack.Screen name='Stats' options={{
       title: 'App Statistics',
       
     }} redirect={!isSignedIn} /> 
+
     <Stack.Screen name='ManageMovers' options={{
       title: 'Manage Movers',
       
     }} redirect={!isSignedIn} /> 
+    
     {/* <Stack.Screen name='Login' />  */}
   </Stack>
     

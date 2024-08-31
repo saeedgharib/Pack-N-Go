@@ -1,11 +1,12 @@
 import React, { useEffect,useState } from 'react'
-import { View,ScrollView,FlatList,Image ,StyleSheet, Pressable} from 'react-native'
+import { View,ScrollView,FlatList,Image ,StyleSheet, Pressable, TouchableOpacity} from 'react-native'
 import { useUser } from '@clerk/clerk-expo'
 import { getDocs,collection } from 'firebase/firestore';
 import DB from '../../database/firebaseConfig';
 import { Card, Text, Title, DataTable, Button, Divider } from 'react-native-paper';
 import { router } from 'expo-router';
-
+import { MaterialIcons } from '@expo/vector-icons';
+import NotificationScreen from '../../app/(users)/(tabs)/NotificationScreen';
 
 const User = () => {
 
@@ -61,6 +62,11 @@ const renderCompanyCard = ({ item }) => (
     </Pressable>
 );
 
+const [isModalVisible, setModalVisible] = useState(false);
+
+const toggleModal = () => {
+  setModalVisible(!isModalVisible);
+};
   return (
 //     <View>
 //         <Text>Users Home {user.emailAddresses[0].emailAddress}</Text>
@@ -107,6 +113,13 @@ const renderCompanyCard = ({ item }) => (
     ))}
   </DataTable>
 </View>
+<View style={styles.iconContainer}>
+<TouchableOpacity onPress={toggleModal}  >
+
+<MaterialIcons name="notifications-on" size={24} color="green" />
+</TouchableOpacity>
+</View>
+<NotificationScreen isVisible={isModalVisible} onClose={toggleModal} />
 </ScrollView>
   )
 }
@@ -129,5 +142,18 @@ const styles = StyleSheet.create({
     title: {
       textAlign: 'center',
       marginBottom: 10,
+    },
+    iconContainer: {
+      position: 'absolute',
+      bottom: 20, // Position 20px from the bottom
+      right: 20,  // Position 20px from the right
+      backgroundColor: 'white',
+      padding: 10,
+      borderRadius: 30, // Make it circular
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 5, // For Android shadow
     },
   });

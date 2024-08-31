@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      
     },
     "android": {
       "adaptiveIcon": {
@@ -30,6 +31,7 @@
       "eas": {
         "projectId": "67e7360a-1d05-4cb8-bae3-44b424c68c00"
       }
+        
     },
     "plugins": [
       "expo-build-properties",

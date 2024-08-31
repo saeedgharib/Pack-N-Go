@@ -4,10 +4,11 @@ import { useUser } from '@clerk/clerk-expo'
 import { getDocs,collection } from 'firebase/firestore';
 import DB from '../../database/firebaseConfig';
 import { Card, Text, Title, DataTable, Button, Divider ,Paragraph,Avatar} from 'react-native-paper';
-import { Link, router } from 'expo-router';
+import { Link, router, useRouter } from 'expo-router';
 import { Ionicons,FontAwesome } from '@expo/vector-icons';
 
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler'
+
 
 
 
@@ -139,20 +140,6 @@ useEffect(() => {
   
 }, []);
 
-const renderCompanyCard = ({ item }) => (
-    <Pressable >
-    
-
-  <Card style={styles.card1} onPress={()=>router.push({pathname:'CompanyDetails',params:{id:item.id}})}>
-    <Card.Content >
-    <Image  source={{uri:item.logo}} style={styles.logo} />
-      <Title>{item.name}</Title>
-      <Text>{item.summary}</Text>
-    </Card.Content>
-  </Card>
-    
-    </Pressable>
-);
 
 const renderItem = ({ item }) => (
   <UserCard person={item} onDelete={deleteUser} onBan={banUser} />
@@ -204,37 +191,28 @@ const banUser = async (userId) => {
   return (
     <GestureHandlerRootView style={styles.container}> 
 
-<ScrollView >
+
 
 <View style={{ padding: 20 }} >
-  <Title>Hello Admin,<Title style={{fontWeight:'bold',color:'#000'}}>{user?.fullName}</Title></Title>
-  <Divider />
-  <Title style={{fontWeight:'bold',color:'green'}}>Registered Companies</Title>
-  <Divider />
-  <FlatList
-    data={companies}
-    renderItem={renderCompanyCard}
-    keyExtractor={item => item.id}
-    horizontal={false}
-    showsHorizontalScrollIndicator={false}
-    style={{ marginVertical: 20 }}
-  />
 
-<Title style={{fontWeight:'bold',color:'#000'}}>Total Registered Users</Title>
+<Title style={{fontWeight:'bold',color:'#000'}}>Manage Users</Title>
+<Title style={{ fontWeight: "bold", color: "#000" ,position:'absolute',marginTop:10,marginLeft:'75%'}}>
+          <Button icon="plus" mode="contained" onPress={() => router.push('/AddUser')} textColor="white" style={{backgroundColor:'black'}} >
+    User
+  </Button>
+          </Title>
+  <Divider />
+  <Divider />
+ 
 <FlatList
       data={users}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
+     
     />
-<Link href='https://dashboard.clerk.com/apps/app_2hbRILyqSrfeoLXGWFG6Qw9zIXO/instances/ins_2hbRIPdiJhjqrmafcwngs8Rz2YS'>
 
-<Button icon="camera" mode="contained">
-    Admin Portal
-    
-  </Button>
-</Link>
 </View>
-</ScrollView>
+
 </GestureHandlerRootView>
   )
 }
@@ -243,7 +221,7 @@ export default Admin
 
 const styles = StyleSheet.create({
   container:{
-    backgroundColor:'#fff'
+    backgroundColor:'transparent',
   },
     card1: {
       margin: 10,

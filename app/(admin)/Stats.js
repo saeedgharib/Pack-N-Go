@@ -1,8 +1,15 @@
-import React from 'react'
+import React from 'react';
 import { StyleSheet,  View, Image, TouchableOpacity, ScrollView } from 'react-native'
 import { Text, Title } from 'react-native-paper'
+import StarRating from './Stars';
 
 const Stats = () => {
+  const handleRating = (rating) => {
+    console.log('Rating:', rating);
+
+  };
+
+  
   return (
     <ScrollView>
 
@@ -73,8 +80,10 @@ const Stats = () => {
           style={styles.icon}
           source={{ uri: 'https://img.icons8.com/?size=100&id=XFOumBmRR5zT&format=png&color=000000' }}
         />
+        
         <Text style={styles.info}>Review</Text>
       </TouchableOpacity>
+    
     </View>
     </ScrollView>
   )

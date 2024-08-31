@@ -6,6 +6,8 @@ import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
+import NotificationScreen from './NotificationScreen';
+import { useState } from 'react';
 export const LogoutButton = () => {
   const { signOut } = useAuth();
 
@@ -13,12 +15,14 @@ export const LogoutButton = () => {
     signOut();
   };
 
+
   return (
     <Pressable onPress={doLogout} style={{ marginRight: 10 }}>
       <Ionicons name="log-out-outline" size={24} color={'#000'} />
     </Pressable>
   );
 };
+
 export const ProfileButton = () => {
 
 
@@ -28,25 +32,25 @@ export const ProfileButton = () => {
 
   return (
     <Pressable onPress={gotoProfile} style={{ marginRight: 10 }}>
-      <Ionicons name="person-outline" size={24} color={'#fff'} />
+      <Ionicons name="person-outline" size={24} color={'#000'} />
     </Pressable>
   );
 };
 
 const TabsPage = () => {
   const { isSignedIn } = useAuth();
-
+ 
   return (
   
     <Tabs 
       screenOptions={{
         headerStyle: {
          
-          backgroundColor: '#fff',
+          backgroundColor: 'lightgreen',
         },
       
        headerTitleStyle:{
-       color:"black"
+       color:"whitesmoke"
        
        },
         headerTintColor: '#fff',
@@ -95,6 +99,7 @@ const TabsPage = () => {
         }}
         redirect={!isSignedIn}
       />
+      
       <Tabs.Screen
         name='CompanyDetails'
         options={{
@@ -115,6 +120,33 @@ const TabsPage = () => {
           headerLeft: () => <DrawerToggleButton/>,
           
         }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='NotificationScreen'
+        
+        options={{
+
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <DrawerToggleButton/>,
+        }}
+        
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='SetPackageLocation'
+        
+        options={{
+
+          href:null,
+          headerRight: () => <LogoutButton />,
+          // headerLeft: () => <DrawerToggleButton/>,
+      
+
+        }}
+        
+        
         redirect={!isSignedIn}
       />
       

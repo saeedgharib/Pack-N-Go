@@ -8,6 +8,8 @@ import { PaperProvider } from "react-native-paper";
 
 const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 console.log(CLERK_PUBLISHABLE_KEY);
+
+
 const tokenCache = {
   async getToken(key) {  
     try {   
