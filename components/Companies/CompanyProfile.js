@@ -9,7 +9,7 @@ import { useUser } from '@clerk/clerk-expo';
 import StarRating from './RatingMovers';
 
 const CompanyProfile = ({cardid}) => {
-    const badWords = ['shit', 'bad3',"bad1"];
+    const badWords = ['shit', 'asshole ',"bad1"];
 
     const clean = (text) => {
       const regex = new RegExp(`\\b(${badWords.join('|')})\\b`, 'gi');

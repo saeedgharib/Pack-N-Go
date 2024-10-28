@@ -1,58 +1,232 @@
-import { router, Tabs } from 'expo-router';
+import { Stack, Tabs, router} from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
-import { useAuth, useUser} from '@clerk/clerk-expo';
-import { useEffect } from 'react';
+import { useAuth} from '@clerk/clerk-expo';
+import { BlurView } from 'expo-blur';
+import { StyleSheet } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { DrawerToggleButton } from '@react-navigation/drawer';
 
+import { useState } from 'react';
+import { NativeScreenNavigationContainer } from 'react-native-screens';
 export const LogoutButton = () => {
-  const {signOut} = useAuth()
+  const { signOut } = useAuth();
+
   const doLogout = () => {
     signOut();
   };
 
+
   return (
     <Pressable onPress={doLogout} style={{ marginRight: 10 }}>
-      <Ionicons name="log-out-outline" size={24} color={'#fff'} />
+      <Ionicons name="log-out-outline" size={24} color={'#000'} />
     </Pressable>
   );
 };
 
+export const ProfileButton = () => {
 
-const TabsPage = () => {
+
+  const gotoProfile = () => {
+    router.push('Profile')
+  };
+
+  return (
+    <Pressable onPress={gotoProfile} style={{ marginRight: 10 }}>
+      <Ionicons name="person-outline" size={24} color={'#000'} />
+    </Pressable>
+  );
+};
+export const BackButton = () => {
+
+
+  const goBack = () => {
+    router.canGoBack=true;
+    router.back();
+  };
+
+  return (
+    <Pressable onPress={goBack} style={{ marginRight: 10 }}>
+      <Ionicons name="arrow-back" size={24} color="white" />
+    </Pressable>
+  );
+};
+
+const MoverLayout = () => {
   const { isSignedIn } = useAuth();
-const {user}=useUser();
  
   return (
-    <Tabs
+    
+    <Tabs 
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#6c47ff',
+         
+          backgroundColor: 'lightgreen',
         },
+      
+       headerTitleStyle:{
+       color:"whitesmoke"
+       
+       },
         headerTintColor: '#fff',
-        headerRight:()=>{return<LogoutButton/>}
+        tabBarActiveTintColor:'green',
       }}>
       <Tabs.Screen
-        name="DriversHomePage"
+        name="MoversHomePage"
         options={{
+          // href:null,
+        //   headerStyle:{opacity:500},
           headerTitle: 'Home',
           tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />,
           tabBarLabel: 'Home',
+          headerRight: () => <ProfileButton/>
+                  }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='JobDetails'
+        options={{
+          href:null,
+          headerTitle: 'JobDetails',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="add" size={24} color={color}/>,
+          tabBarLabel: 'add Furniture',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='MoverProfile'
+        options={{
+          href:null,
+          headerTitle: 'JobDetails',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="add" size={24} color={color}/>,
+          tabBarLabel: 'add Furniture',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='AddDrivers'
+        options={{
+          href:null,
+          headerTitle: 'JobDetails',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="add" size={24} color={color}/>,
+          tabBarLabel: 'add Furniture',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='Management'
+        options={{
+          
+          headerTitle: 'JobDetails',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="add" size={24} color={color}/>,
+          tabBarLabel: 'Management',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      {/* 
+      <Tabs.Screen
+        name='Inventory'
+        options={{
+          headerTitle: 'Inventory',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="inventory" size={24} color={color}/>,
+          tabBarLabel: 'inventory',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='Profile'
+        options={{
+          headerTitle: 'User Profile',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="supervised-user-circle" size={24} color={color}/>,
+          tabBarLabel: 'profile',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      
+      <Tabs.Screen
+        name='CompanyDetails'
+        options={{
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <DrawerToggleButton/>,
           
         }}
         redirect={!isSignedIn}
       />
       <Tabs.Screen
-        name="Profile"
+        name='EditInventory'
+        
         options={{
-          headerTitle: 'My Profile',
-          tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />,
-          tabBarLabel: 'My Profile',
+
+          href:null,
           headerRight: () => <LogoutButton />,
+          headerLeft: () => <DrawerToggleButton/>,
+          
         }}
         redirect={!isSignedIn}
       />
+      <Tabs.Screen
+        name='NotificationScreen'
+        
+        options={{
+
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <DrawerToggleButton/>,
+        }}
+        
+        redirect={!isSignedIn}
+      />
+       <Tabs.Screen
+        name='SetPackageLocation'
+        href='null'
+        options={{
+          headerTitle:'pickup and dropoff',
+          href:null,
+          headerRight: () => <LogoutButton />,
+          // headerLeft: () => <DrawerToggleButton/>  
+        }}
+    
+        redirect={!isSignedIn}
+      /> 
+      
+       <Tabs.Screen
+        name='ListCompanies'
+        href='null'
+        options={{
+          headerTitle:'select movers',
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <BackButton/>
+        }}
+    
+        redirect={!isSignedIn}
+      /> 
+       <Tabs.Screen
+        name='FareCalculation'
+        href='null'
+        options={{
+          headerTitle:'select movers',
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <BackButton/>
+        }}
+    
+        redirect={!isSignedIn}
+      />  */}
+      
     </Tabs>
+    
   );
 };
 
-export default TabsPage;
+
+export default MoverLayout;
+
+

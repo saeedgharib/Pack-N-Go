@@ -75,7 +75,8 @@ const CustomDrawerContent = (props) => {
 const Layout = () => {
   return (
     <Drawer drawerContent={(props)=> <CustomDrawerContent {...props}/>} screenOptions={{headerShown:false}} >
-      
+    
+
     </Drawer>
   )
 }

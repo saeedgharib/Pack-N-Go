@@ -264,15 +264,55 @@
 //   );
 // };
 
+import { router, useLocalSearchParams } from 'expo-router';
+import { addDoc, collection } from 'firebase/firestore';
 import React, { useState,useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView ,Modal,TouchableOpacity,TextInput,FlatList} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-
+import { Button, Title } from 'react-native-paper';
+import DB from '../../database/firebaseConfig';
+import { useUser } from '@clerk/clerk-expo';
 
 const PackageOrder = () => {
   const key = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
   console.log(key);
+ 
   
+// FORMDATA
+const {user}=useUser();
+const params = useLocalSearchParams();
+  
+  const initialFormData = {
+    userId: params.userId || "",
+    image:params.image||"",
+    fullName: params.fullName || "",
+    phoneNumber: params.phoneNumber || "",
+    email: params.email || "",
+    pickupLocation: {
+      placeId: params.pickupLocation?.placeId || "",
+      latitude: params.pickupLocation?.latitude || "",
+      longitude: params.pickupLocation?.longitude || "",
+      name: params.pickupLocation?.name || "",
+      address: params.pickupLocation?.address || "",
+    },
+    dropffLocation: {
+      placeId: params.dropffLocation?.placeId || "",
+      latitude: params.dropffLocation?.latitude || "",
+      longitude: params.dropffLocation?.longitude || "",
+      name: params.dropffLocation?.name || "",
+      address: params.dropffLocation?.address || "",
+    },
+    moverId: params.moverId || "",
+    moveDate: params.moveDate || "",
+    moveTime: params.moveTime || "",
+    itemsDescription: params.itemsDescription || "",
+    moversRequired: params.moversRequired || "",
+    specialRequests: params.specialRequests || "",
+    accessRestrictions: params.accessRestrictions || "",
+    additionalNotes: params.additionalNotes || "",
+  };
+
+  const [formData, setFormData] = useState(initialFormData)
   const [selectedLocation, setSelectedLocation] = useState({
     latitude:37.78825,
     longitude:-122.4324
@@ -282,6 +322,7 @@ const PackageOrder = () => {
   const [search, setSearch] = useState("");
   const [predictions, setPredictions] = useState([]);
 
+const [IspickupLocationSet, setIspickupLocationSet] = useState(false)
 
   const handleMapPress = async (event) => {
     console.log(event.data);
@@ -306,18 +347,23 @@ const PackageOrder = () => {
           placeId: place.place_id,
           name: place.address_components[0].long_name,
           address: place.formatted_address,
+          latitude:latitude,
+          longitude:longitude
         });
         setSearch( place.formatted_address)
       }
+  
+      
     } catch (error) {
       console.error("Error fetching place details:", error);
     }
   };
 
+console.log(encodeURI(params.image));
 
 
   useEffect(() => {
-    
+   
     if (search.length > 1) {
       fetchPredictions();
     } else {
@@ -350,14 +396,14 @@ const PackageOrder = () => {
         console.log(place);
         console.log(place.formatted_address);
         // setSelectedLocation(place);
-        setPlaceDetails({
+          setPlaceDetails({
           placeId: place.place_id,
           name: place.address_components[0].long_name,
           address: place.formatted_address,
         });
         const latitude=place.geometry.location.lat
         const longitude=place.geometry.location.lng
-        console.log("blah blah"+latitude+"blaah"+longitude);
+        console.log("blah blah",latitude,"blaah",longitude);
         
       setSelectedLocation({
         latitude,
@@ -365,14 +411,118 @@ const PackageOrder = () => {
       });
       setSearch(data.result.formatted_address);
       setPredictions([]);
+     
+      
     } catch (error) {
       console.error("Error fetching place details:", error);
     }
   };
   console.log(selectedLocation);
 
+
+const OnClickNext=() => {
+  
+  setFormData((prevData) => ({
+    ...prevData,
+    pickupLocation:{
+      placeId:placeDetails.placeId,
+      name:placeDetails.name,
+      address:placeDetails.address,
+      latitude:placeDetails.latitude,
+      longitude:placeDetails.longitude
+    }
+
+  }));
+
+  setIspickupLocationSet(true)
+  console.log(formData);
+  setPlaceDetails([])
+  setSearch([])
+  setPredictions([])
+
+}
+
+
+const AddDropOff=async() => {
+  console.log(placeDetails);
+  
+  setFormData((prevData) => ({
+    ...prevData,
+    dropffLocation:{
+      placeId:placeDetails.placeId,
+      name:placeDetails.name,
+      address:placeDetails.address,
+      latitude:placeDetails.latitude,
+      longitude:placeDetails.longitude
+    }
+
+  }));
+  setPlaceDetails([]) 
+  setSearch([])
+  setPredictions([])
+  setIspickupLocationSet(false)
+  console.log("dropoff location",formData.dropffLocation);
+  AddJobListing()
+  router.push('/MyOrders?clearData=true');
+  // router.push({pathname:'/MyOrders',params:true})
+}
+
+
+
+
+const AddJobListing=async() => {
+
+    try {
+
+      console.log(formData.image);
+      
+      
+      await addDoc(collection(DB,"JobListing"),{
+        userId:user?.id||"",
+        image:formData.image,
+        fullName: formData.fullName,
+    phoneNumber: formData.phoneNumber,
+    email: formData.email,
+    pickupLocation: {
+      placeId: formData.pickupLocation.placeId,
+      latitude: formData.pickupLocation.latitude,
+      longitude: formData.pickupLocation.longitude,
+      name: formData.pickupLocation.name,
+      address: formData.pickupLocation.address,
+    },
+    dropffLocation: {
+      placeId: formData.dropffLocation.placeId,
+      latitude: formData.dropffLocation.latitude,
+      longitude: formData.dropffLocation.longitude,
+      name: formData.dropffLocation.name,
+      address: formData.dropffLocation.address,
+    },
+
+    moverId: formData.moverId|| "",
+    moveDate: formData.moveDate,
+    moveTime: formData.moveTime,
+    itemsDescription: formData.itemsDescription,
+    moversRequired: formData.moversRequired,
+    specialRequests: formData.specialRequests,
+    accessRestrictions: formData.accessRestrictions,
+    additionalNotes: formData.additionalNotes,
+    status: "pending",
+      })
+      console.log("Added JobListing");
+      
+    } catch (error) {
+      console.log(error); 
+      
+    }
+
+}
+
   return (
-    <View style={styles.container}>
+    <>
+
+    {IspickupLocationSet?
+      <View style={styles.container}>
+    <Title>dropff Location</Title>
     <TextInput
       style={styles.input}
       placeholder="Search for a place"
@@ -387,7 +537,7 @@ const PackageOrder = () => {
         </TouchableOpacity>
       )}
       keyExtractor={(item) => item.place_id}
-      style={styles.predictionsList}
+      style={styles.prediction}
     />
 
     <MapView
@@ -414,6 +564,7 @@ const PackageOrder = () => {
         />
       )}
     </MapView>
+    
 <ScrollView>
 
     {selectedLocation && placeDetails && (
@@ -424,10 +575,75 @@ const PackageOrder = () => {
         <Text style={styles.infoText}>Address: {placeDetails.address}</Text>
         <Text style={styles.infoText}>Latitude: {selectedLocation.latitude}</Text>
         <Text style={styles.infoText}>Longitude: {selectedLocation.longitude}</Text>
+        
       </View>
     )}
 </ScrollView>
+<Button textColor='white' buttonColor='lightgreen' focusable={true} onPress={AddDropOff} >Submit</Button>
   </View>
+    :
+    <View style={styles.container}>
+    <Title>PickupLocation</Title>
+    <TextInput
+      style={styles.input}
+      placeholder="Search for a place"
+      value={search}
+      onChangeText={(e) => setSearch(e)}
+    />
+    <FlatList
+      data={predictions}
+      renderItem={({ item }) => (
+        <TouchableOpacity onPress={() => handleSelectLocation(item.place_id)}>
+          <Text style={styles.prediction}>{item.description}</Text>
+        </TouchableOpacity>
+      )}
+      keyExtractor={(item) => item.place_id}
+      style={styles.prediction}
+    />
+
+    <MapView
+    
+      style={styles.map}
+      initialRegion={{
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}
+      onPress={handleMapPress}
+    >
+      {selectedLocation && (
+        <Marker
+        // style={{color:'primary'}}
+        
+          draggable
+          coordinate={{
+            latitude: selectedLocation.latitude,
+            longitude: selectedLocation.longitude
+          }}       
+          onDragEnd={handleMapPress}
+        />
+      )}
+    </MapView>
+    
+<ScrollView>
+
+    {selectedLocation && placeDetails && (
+      <View style={styles.infoContainer}>
+        <Text style={styles.infoText}>Selected Location:</Text>
+        <Text style={styles.infoText}>PlaceId: {placeDetails.placeId}</Text>
+        <Text style={styles.infoText}>Name: {placeDetails.name}</Text>
+        <Text style={styles.infoText}>Address: {placeDetails.address}</Text>
+        <Text style={styles.infoText}>Latitude: {selectedLocation.latitude}</Text>
+        <Text style={styles.infoText}>Longitude: {selectedLocation.longitude}</Text>
+        
+      </View>
+    )}
+</ScrollView>
+<Button textColor='white' buttonColor='lightgreen'  focusable={true} onPress={OnClickNext} >Next</Button>
+  </View>
+    }
+    </>
   );
 };
 

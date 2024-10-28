@@ -36,6 +36,7 @@ const StarRating = ({ maxStars = 5,moverId}) => {
       try {
         const q = query(collection(DB,"companies"), where("id", "==", moverId));
         const mover = await getDocs(q);
+        
        const moverData= mover.forEach(doc => {
 
          console.log(doc.data());

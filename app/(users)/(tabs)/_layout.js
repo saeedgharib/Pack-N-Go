@@ -1,4 +1,4 @@
-import { Tabs, router } from 'expo-router';
+import { Stack, Tabs, router} from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
 import { useAuth} from '@clerk/clerk-expo';
@@ -8,6 +8,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { DrawerToggleButton } from '@react-navigation/drawer';
 import NotificationScreen from './NotificationScreen';
 import { useState } from 'react';
+import { NativeScreenNavigationContainer } from 'react-native-screens';
 export const LogoutButton = () => {
   const { signOut } = useAuth();
 
@@ -36,12 +37,26 @@ export const ProfileButton = () => {
     </Pressable>
   );
 };
+export const BackButton = () => {
+
+
+  const goBack = () => {
+    router.canGoBack=true;
+    router.back();
+  };
+
+  return (
+    <Pressable onPress={goBack} style={{ marginRight: 10 }}>
+      <Ionicons name="arrow-back" size={24} color="white" />
+    </Pressable>
+  );
+};
 
 const TabsPage = () => {
   const { isSignedIn } = useAuth();
  
   return (
-  
+    
     <Tabs 
       screenOptions={{
         headerStyle: {
@@ -134,25 +149,50 @@ const TabsPage = () => {
         
         redirect={!isSignedIn}
       />
-      <Tabs.Screen
+       <Tabs.Screen
         name='SetPackageLocation'
-        
+        href='null'
         options={{
-
+          headerTitle:'pickup and dropoff',
           href:null,
           headerRight: () => <LogoutButton />,
-          // headerLeft: () => <DrawerToggleButton/>,
-      
-
+          // headerLeft: () => <DrawerToggleButton/>  
         }}
-        
-        
+    
         redirect={!isSignedIn}
-      />
+      /> 
+      
+       <Tabs.Screen
+        name='ListCompanies'
+        href='null'
+        options={{
+          headerTitle:'select movers',
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <BackButton/>
+        }}
+    
+        redirect={!isSignedIn}
+      /> 
+       <Tabs.Screen
+        name='FareCalculation'
+        href='null'
+        options={{
+          headerTitle:'select movers',
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <BackButton/>
+        }}
+    
+        redirect={!isSignedIn}
+      /> 
       
     </Tabs>
     
   );
 };
 
+
 export default TabsPage;
+
+

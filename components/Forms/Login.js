@@ -37,6 +37,7 @@ const {isSignedIn} = useAuth()
     } catch (err) {
       alert("Email or Password is incorrect")
     }
+    setLoading(false);
   };
     
   return (

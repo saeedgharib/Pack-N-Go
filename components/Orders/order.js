@@ -731,27 +731,32 @@ import {
   Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import { router } from "expo-router";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import DateTimePicker from "@react-native-community/datetimepicker";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { storage } from "../../database/firebaseConfig";
+import Spinner from "react-native-loading-spinner-overlay";
+import * as FileSystem from 'expo-file-system';
+import { useLocalSearchParams } from "expo-router";
+
 
 const JobListingForm = ({ proceed }) => {
-  const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
+  let imageUrl = '';
+ const { clearData } = useLocalSearchParams()
   const [formData, setFormData] = useState({
+    image:imageUrl||"",
     fullName: "",
     phoneNumber: "",
     email: "",
-    pickupLocationId: {
+    pickupLocation: {
       placeId: "",
       latitude: "",
       longitude: "",
       name: "",
       address: "",
     },
-    dropffLocationId: {
+    dropffLocation: {
       placeId: "",
       latitude: "",
       longitude: "",
@@ -764,35 +769,46 @@ const JobListingForm = ({ proceed }) => {
     itemsDescription: "",
     moversRequired: "",
     specialRequests: "",
-    budget: "",
-    paymentMethod: "",
+
     accessRestrictions: "",
-    insurance: "",
+
     additionalNotes: "",
   });
   const [image, setImage] = useState(null);
-  const [currentLocation, setCurrentLocation] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync({});
-      setCurrentLocation(location);
-    })();
-  }, []);
+  const [loading,setLoading] = useState(null);
 
+  
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const proceedNext = () => {
+  const proceedNext = async() => {
+setLoading(true)
+    // try {
+
+      
+    //     // const licenseRef = ref(storage, `drivers/${name}_license`);
+    //     // const img = await fetch(licenseImage);
+    //     // const bytes = await img.blob();
+    //     // await uploadBytes(licenseRef, bytes);
+
+    //     // const imageRef = ref(storage, `/furnitures/images/fur2_image`);
+    //     // const img = await fetch(image);
+    //     // const bytes = await img.blob();
+    //     //  // Unique image name
+    //     // await uploadBytes(imageRef, bytes);
+    //     // imageUrl = await getDownloadURL(imageRef);
+      
+    // }catch (error) {
+    //   console.log(error)
+      
+    // }
+    setFormData({ ...formData, image:imageUrl});
     console.log(formData);
     proceed(formData);
-  };
+    setLoading(false)
+}
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -803,11 +819,38 @@ const JobListingForm = ({ proceed }) => {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImage(result.assets[0].uri)
+      
     }
+    
   };
 
-  // FOR GETTING DATE AND TIME
+  useEffect(() => {
+    if (clearData === 'true') {
+      setFormData({
+        image:"",
+        fullName: "",
+        phoneNumber: "",
+        email: "",
+        pickupLocation: { placeId: "", latitude: "", longitude: "", name: "", address: "" },
+        dropoffLocation: { placeId: "", latitude: "", longitude: "", name: "", address: "" },
+        moverId: "",
+        moveDate: "",
+        moveTime: "",
+        itemsDescription: "",
+        moversRequired: "",
+        specialRequests: "",
+        accessRestrictions: "",
+        additionalNotes: "",
+      });
+      setImage(null);
+    }
+  }, [clearData]);
+
+
+  
+
+  // FOR GETTING DATE  AND TIME
   const [date, setDate] = useState(new Date());
   const [showDate, setShowDate] = useState(false);
   const [showTime, setShowTime] = useState(false);
@@ -816,8 +859,10 @@ const JobListingForm = ({ proceed }) => {
 
   const DateTime = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShowDate(Platform.OS === "ios");
-    setDate ** currentDate;
+    setDateText(currentDate)
+    // setShowDate(false);
+    
+    setDate(currentDate);
     formData.moveDate = currentDate;
     let tempDate = new Date(currentDate);
     let fDate =
@@ -830,7 +875,8 @@ const JobListingForm = ({ proceed }) => {
     formData.moveTime = fTime;
     setDateText(fDate);
     setTimeText(fTime);
-    console.log(fDate + "(" + fTime + ")");
+    console.log("formdate",formData.moveTime);
+    
   };
 
   const showMode = (currentMode) => {
@@ -840,8 +886,79 @@ const JobListingForm = ({ proceed }) => {
       setShowTime(true);
     }
   };
+
+  const uploadImage = async () => {
+    if (image==null) return;
+    
+    setLoading(true);
+    try {
+        
+        const response = await fetch(image)
+        const blob = await response.blob();
+        const imageName = new Date().getTime() + "_image";  // Unique image name
+  
+       
+        const storageRef = ref(storage, `images/${imageName}`);
+  
+        // Upload the image
+        const snapshot = await uploadBytes(storageRef, blob);
+  
+       try {
+         const downloadUrl = await getDownloadURL(snapshot.ref);
+         setImageUrl(encodeURIComponent(downloadUrl))
+          console.log("Image URL ",imageUrl);
+          
+       } catch (error) {
+        
+       }
+        console.log(imageUrl);
+        
+        setFormData((prevData) => ({
+          ...prevData,
+          image: imageUrl
+        }));
+        setLoading(false);
+        // return ImageUrl;
+        
+    } catch (error) {
+      console.log("upload image method error",error);
+      
+    }
+    // try {
+    //   if (image) {
+        
+
+    //     // Read the file into a blob
+        
+    //     const blob = await image.blob();
+
+    //     // Define a unique image name and reference in Firebase Storage
+    //     const imageName = new Date().getTime() + "_image";
+    //     const storageRef = ref(storage, `images/${imageName}`);
+
+    //     // Upload the blob to Firebase Storage
+    //     const snapshot = await uploadBytes(storageRef, blob);
+
+    //     // Get and return the download URL
+    //     const downloadUrl = await getDownloadURL(snapshot.ref);
+    //     console.log("Download URL:", downloadUrl);
+    //     imageUrl = downloadUrl
+    //     setLoading(false);
+    //     return downloadUrl;
+    //   }
+    // } catch (error) {
+    //   console.log("Upload image method error:", error);
+    //   setLoading(false);
+    // }
+  };
+
+
+
+  
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
+ <Spinner visible={loading} />
+    <ScrollView showsVerticalScrollIndicator={false}>
       <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
         {image ? (
           <Image source={{ uri: image }} style={styles.image} />
@@ -887,6 +1004,7 @@ const JobListingForm = ({ proceed }) => {
       <View style={styles.buttonContainer}>
         <TextInput
           style={styles.DateTimeinput}
+          editable={false}
           placeholder={Datetext || "Select a date"}
           placeholderTextColor="#999"
         />
@@ -911,6 +1029,7 @@ const JobListingForm = ({ proceed }) => {
         <TextInput
           style={styles.DateTimeinput}
           placeholder={Timetext || "Select Time"}
+          editable={false}
           placeholderTextColor="#999"
         />
         <TouchableOpacity onPress={() => showMode("time")}>
@@ -936,7 +1055,7 @@ const JobListingForm = ({ proceed }) => {
         value={formData.specialRequests}
         onChangeText={(text) => handleInputChange("specialRequests", text)}
       />
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Budget"
         value={formData.budget}
@@ -947,34 +1066,38 @@ const JobListingForm = ({ proceed }) => {
         placeholder="Payment Method"
         value={formData.paymentMethod}
         onChangeText={(text) => handleInputChange("paymentMethod", text)}
-      />
+      /> */}
       <TextInput
         style={styles.input}
         placeholder="Access Restrictions"
         value={formData.accessRestrictions}
         onChangeText={(text) => handleInputChange("accessRestrictions", text)}
       />
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Insurance"
         value={formData.insurance}
         onChangeText={(text) => handleInputChange("insurance", text)}
-      />
+      /> */}
       <TextInput
         style={styles.input}
         placeholder="Additional Notes"
         value={formData.additionalNotes}
         onChangeText={(text) => handleInputChange("additionalNotes", text)}
       />
+ 
 
       <Button title="Submit" onPress={proceedNext} />
+  
     </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 25,
+    flex: 1,
   },
   header: {
     fontSize: 24,
