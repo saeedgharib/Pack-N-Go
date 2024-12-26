@@ -95,6 +95,39 @@ const MoverLayout = () => {
         redirect={!isSignedIn}
       />
       <Tabs.Screen
+        name='Map'
+        options={{
+          href:null,
+          headerTitle: 'JobDetails',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="add" size={24} color={color}/>,
+          tabBarLabel: 'add Furniture',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='AddCars'
+        options={{
+          href:null,
+          headerTitle: 'JobDetails',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="add" size={24} color={color}/>,
+          tabBarLabel: 'add Furniture',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='DriversList'
+        options={{
+          href:null,
+          headerTitle: 'JobDetails',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="add" size={24} color={color}/>,
+          tabBarLabel: 'add Furniture',
+          headerRight: () => <LogoutButton />,
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
         name='MoverProfile'
         options={{
           href:null,

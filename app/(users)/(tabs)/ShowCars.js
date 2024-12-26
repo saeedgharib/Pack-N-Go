@@ -43,7 +43,7 @@ const ShowCars=()=>{
     const [cars, setCars] = useState([])
     const [selectedType, setSelectedType] = useState('All');
 
-    const carTypes = ['All', 'Pickup', 'Cargo Van', 'smallbox','small trucks','refrigirated','flabbed','largebox','mediumbox'];
+    const carTypes = ['All', 'Cargo Van', 'smallbox','small trucks','refrigirated','flabbed','largebox','mediumbox'];
     const filteredCars = selectedType === 'All' ? carsData : carsData.filter(car => car.type === selectedType);
     const fetchCars = async() =>{
         try {
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     borderRadius:12,
     borderWidth:1,
     borderColor: "grey",
-    elevation:"secondary",
+    elevation:2,
     fontWeight:'bold',
   },
   title:{

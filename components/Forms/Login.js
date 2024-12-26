@@ -43,8 +43,12 @@ const {isSignedIn} = useAuth()
   return (
     <SafeAreaView style={styles.container}>
         <Spinner visible={loading} />
-        <Image source={logo} style={styles.image} resizeMode='contain' />
+    
+        <Image source={logo} style={styles.image}  resizeMode='contain'/>
+        
+        
         <Text style={styles.title}>Login</Text>
+        
         <View style={styles.inputView}>
             <TextInput style={styles.input} placeholder='Email' value={emailAddress} onChangeText={setEmailAddress} autoCorrect={false}
         autoCapitalize='none' />
@@ -83,7 +87,8 @@ export default LoginForm;
 const styles = StyleSheet.create({
   container : {
     alignItems : "center",
-    paddingTop: Platform.OS === "ios"?70:0,
+    paddingTop: Platform.OS === "ios"?70:-10,
+    
   },
   image : {
     height : 180,

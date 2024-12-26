@@ -265,7 +265,7 @@
 // };
 
 import { router, useLocalSearchParams } from 'expo-router';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, updateDoc } from 'firebase/firestore';
 import React, { useState,useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView ,Modal,TouchableOpacity,TextInput,FlatList} from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
@@ -274,13 +274,14 @@ import DB from '../../database/firebaseConfig';
 import { useUser } from '@clerk/clerk-expo';
 
 const PackageOrder = () => {
-  const key = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
+  const key = "AIzaSyC6kkz9yNjthTzu8vGULBRafD-4B1Hnc_o"
   console.log(key);
  
   
 // FORMDATA
 const {user}=useUser();
 const params = useLocalSearchParams();
+  console.log("params"+params.imaage); 
   
   const initialFormData = {
     userId: params.userId || "",
@@ -295,12 +296,12 @@ const params = useLocalSearchParams();
       name: params.pickupLocation?.name || "",
       address: params.pickupLocation?.address || "",
     },
-    dropffLocation: {
-      placeId: params.dropffLocation?.placeId || "",
-      latitude: params.dropffLocation?.latitude || "",
-      longitude: params.dropffLocation?.longitude || "",
-      name: params.dropffLocation?.name || "",
-      address: params.dropffLocation?.address || "",
+    dropoffLocation: {
+      placeId: params.dropoffLocation?.placeId || "",
+      latitude: params.dropoffLocation?.latitude || "",
+      longitude: params.dropoffLocation?.longitude || "",
+      name: params.dropoffLocation?.name || "",
+      address: params.dropoffLocation?.address || "",
     },
     moverId: params.moverId || "",
     moveDate: params.moveDate || "",
@@ -324,6 +325,10 @@ const params = useLocalSearchParams();
 
 const [IspickupLocationSet, setIspickupLocationSet] = useState(false)
 
+useEffect(() => {
+  console.log("Updated formData Dropoff:", formData?.dropoffLocation.latitude);
+}, [formData]);
+ 
   const handleMapPress = async (event) => {
     console.log(event.data);
 
@@ -335,7 +340,10 @@ const [IspickupLocationSet, setIspickupLocationSet] = useState(false)
 
     try {
       const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${key}`
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${key}`,{
+          method: 'GET',
+          type: 'application/json',
+        }
       );
       const data = await response.json();
 
@@ -359,7 +367,7 @@ const [IspickupLocationSet, setIspickupLocationSet] = useState(false)
     }
   };
 
-console.log(encodeURI(params.image));
+console.log(params.imageUrl);
 
 
   useEffect(() => {
@@ -400,10 +408,12 @@ console.log(encodeURI(params.image));
           placeId: place.place_id,
           name: place.address_components[0].long_name,
           address: place.formatted_address,
+          latitude:place.geometry.location.lat,
+          longitude:place.geometry.location.lng
         });
         const latitude=place.geometry.location.lat
         const longitude=place.geometry.location.lng
-        console.log("blah blah",latitude,"blaah",longitude);
+        console.log("ltitude"+latitude+"longitude"+longitude);
         
       setSelectedLocation({
         latitude,
@@ -434,21 +444,46 @@ const OnClickNext=() => {
 
   }));
 
-  setIspickupLocationSet(true)
   console.log(formData);
-  setPlaceDetails([])
+  setPlaceDetails(null)
   setSearch([])
   setPredictions([])
+  setIspickupLocationSet(true)
 
 }
 
 
-const AddDropOff=async() => {
-  console.log(placeDetails);
+// const AddDropOff=async() => {
+//   console.log(placeDetails);
   
-  setFormData((prevData) => ({
+//   setFormData((prevData) => ({
+//     ...prevData,
+//     dropffLocation:{
+//       placeId:placeDetails.placeId,
+//       name:placeDetails.name,
+//       address:placeDetails.address,
+//       latitude:placeDetails.latitude,
+//       longitude:placeDetails.longitude
+//     }
+
+//   }));
+//   setPlaceDetails([]) 
+//   setSearch([])
+//   setPredictions([])
+//   setIspickupLocationSet(false)
+//   console.log("dropoff location",formData.dropffLocation);
+//   AddJobListing()
+//   router.push('/MyOrders?clearData=true');
+//   // router.push({pathname:'/MyOrders',params:true})
+// }
+
+const AddDropOff = async () => {
+  try {
+    console.log("dropoff location"+placeDetails.placeId);
+
+     setFormData((prevData) => ({
     ...prevData,
-    dropffLocation:{
+    dropoffLocation:{
       placeId:placeDetails.placeId,
       name:placeDetails.name,
       address:placeDetails.address,
@@ -457,26 +492,29 @@ const AddDropOff=async() => {
     }
 
   }));
-  setPlaceDetails([]) 
-  setSearch([])
-  setPredictions([])
-  setIspickupLocationSet(false)
-  console.log("dropoff location",formData.dropffLocation);
-  AddJobListing()
-  router.push('/MyOrders?clearData=true');
-  // router.push({pathname:'/MyOrders',params:true})
-}
 
+    // setPlaceDetails([]);
+    setSearch("");
+    setPredictions([]);
+    console.log("Formdata Dropoff"+formData.dropoffLocation.latitude);
+    console.log("Formdata Dropoff"+formData.dropoffLocation.placeId);
+    
+    // router.push({pathname:'/MyOrders',params:true})
+    
+    AddJobListing();
+    setIspickupLocationSet(false);
+  } catch (error) {
+    console.error("Error adding drop-off location:", error);
+  }
+};
 
 
 
 const AddJobListing=async() => {
-
+ 
+  console.log(formData);
     try {
 
-      console.log(formData.image);
-      
-      
       await addDoc(collection(DB,"JobListing"),{
         userId:user?.id||"",
         image:formData.image,
@@ -490,13 +528,20 @@ const AddJobListing=async() => {
       name: formData.pickupLocation.name,
       address: formData.pickupLocation.address,
     },
-    dropffLocation: {
-      placeId: formData.dropffLocation.placeId,
-      latitude: formData.dropffLocation.latitude,
-      longitude: formData.dropffLocation.longitude,
-      name: formData.dropffLocation.name,
-      address: formData.dropffLocation.address,
+    dropoffLocation: {
+      placeId: formData.dropoffLocation.placeId,
+      latitude: formData.dropoffLocation.latitude,
+      longitude: formData.dropoffLocation.longitude,
+      name: formData.dropoffLocation.name,
+      address: formData.dropoffLocation.address,
     },
+    // dropoffLocation: {
+    //   placeId: placeDetails.dropoffLocation.placeId,
+    //   latitude: placeDetails.dropoffLocation.latitude,
+    //   longitude: placeDetails.dropoffLocation.longitude,
+    //   name: placeDetails.dropoffLocation.name,
+    //   address: placeDetails.dropoffLocation.address,
+    // },
 
     moverId: formData.moverId|| "",
     moveDate: formData.moveDate,
@@ -509,9 +554,10 @@ const AddJobListing=async() => {
     status: "pending",
       })
       console.log("Added JobListing");
-      
+      alert("Job Listing added successfully")
+      router.push({pathname:'/MyOrders',params:true})
     } catch (error) {
-      console.log(error); 
+      console.log("joblisting error"+error); 
       
     }
 
@@ -522,7 +568,7 @@ const AddJobListing=async() => {
 
     {IspickupLocationSet?
       <View style={styles.container}>
-    <Title>dropff Location</Title>
+    <Title>dropoff Location</Title>
     <TextInput
       style={styles.input}
       placeholder="Search for a place"

@@ -4,12 +4,14 @@ import DB from '../../database/firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
+import MapScreen from '../../components/Companies/MapScreen';
 
 const JobDetails = () => {
   const { jobId } = useLocalSearchParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
 
   const fetchJobDetails = async () => {
     try {
@@ -37,7 +39,7 @@ const JobDetails = () => {
   const updateJobStatus = async (status) => {
     try {
       await updateDoc(doc(DB, 'JobListing', jobId), {
-        bookingStatus: status,
+        status: status,
       });
       Alert.alert('Success', `Job status updated to ${status}.`);
       setJob(prev => ({ ...prev, bookingStatus: status }));
@@ -46,7 +48,7 @@ const JobDetails = () => {
       Alert.alert('Error', 'Failed to update job status.');
     }
   };
-
+  console.log(job);
   if (loading) {
     return (
       <View style={styles.loader}>
@@ -68,14 +70,27 @@ const JobDetails = () => {
           <Paragraph>Email: {job.email}</Paragraph>
           <Paragraph>Move Date: {job.moveDate}</Paragraph>
           <Paragraph>Move Time: {job.moveTime}</Paragraph>
-          <Paragraph>Pickup Location: {job.pickupLocation.address}</Paragraph>
-          <Paragraph>Dropoff Location: {job.dropffLocation.address}</Paragraph>
+          <Paragraph>Pickup Location: {job.pickupLocation?.address}</Paragraph>
+          <Paragraph>Dropoff Location: {job.dropoffLocation?.address}</Paragraph>
           <Paragraph>Status: {job.bookingStatus}</Paragraph>
         </Card.Content>
+        
+      <Button
+            mode="contained"
+            onPress={() => router.push(
+              {
+                pathname:'DriversList',
+                params:{orderId:jobId}
+              }
+            ) }
+            style={{margin:10,backgroundColor:'lightgreen'}}
+          >
+            Assign Driver
+          </Button>
       </Card>
       <View style={styles.buttonsContainer}>
         
-        {job.bookingStatus == 'booked' && (
+        {job.status == 'booked' && (
           <Button
             mode="contained"
             onPress={() => updateJobStatus('in-progress')}
@@ -84,7 +99,7 @@ const JobDetails = () => {
             Start Job
           </Button>
         )}
-        {job.bookingStatus === 'in-progress' && (
+        {job.status === 'processing' && (
           <Button
             mode="contained"
             onPress={() => updateJobStatus('completed')}
@@ -93,6 +108,7 @@ const JobDetails = () => {
             Complete Job
           </Button>
         )}
+       
         <Button
           mode="outlined"
           onPress={() => router.back()}
@@ -101,6 +117,7 @@ const JobDetails = () => {
           Back
         </Button>
       </View>
+      {job && <MapScreen job={job} />}
     </View>
   );
 };

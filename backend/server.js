@@ -1,3 +1,5 @@
+
+
 // server.js
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -18,10 +20,12 @@ app.get('/pubkey', async(req, res) => {
     res.json({key:"pk_test_51QEIiGCRwZ65hD9Onm8DbIIWq0L7dU4nY9tA2UiGz02kkFEVQC8QxGdYUHXKvurk1uApOjCYZtIFrSBUt1cMV8DH00XzShCn9k"})
 
 })
+
+
 app.post('/payment-sheet', async (req, res) => {
-  const total=req.body.total
+  const total=req.body.total;
   console.log(total);
-  
+  console.log("HIT")
   // Use an existing Customer ID if this is a returning customer.
   const customer = await stripe.customers.create();
   const ephemeralKey = await stripe.ephemeralKeys.create(
@@ -29,7 +33,8 @@ app.post('/payment-sheet', async (req, res) => {
     {apiVersion: '2024-09-30.acacia'}
   );
   const paymentIntent = await stripe.paymentIntents.create({
-
+    
+    // amount: 45000,
     amount: parseInt(total),
     currency: 'pkr',
     customer: customer.id,
@@ -39,7 +44,9 @@ app.post('/payment-sheet', async (req, res) => {
       enabled: true,
     },
   });
-console.log(paymentIntent+ephemeralKey+customer);
+  console.log({paymentIntent});
+// console.log(paymentIntent+ephemeralKey+customer);
+
 
   res.json({
     paymentIntent: paymentIntent.client_secret,
@@ -49,6 +56,13 @@ console.log(paymentIntent+ephemeralKey+customer);
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+
+
+
+app.listen(3000, () => {
+ 
+  console.log('Listening on http://localhost:3000');
 });
+
+
+

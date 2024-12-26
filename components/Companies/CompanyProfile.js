@@ -9,7 +9,7 @@ import { useUser } from '@clerk/clerk-expo';
 import StarRating from './RatingMovers';
 
 const CompanyProfile = ({cardid}) => {
-    const badWords = ['shit', 'asshole ',"bad1"];
+    const badWords = ['shit',"bad1"];
 
     const clean = (text) => {
       const regex = new RegExp(`\\b(${badWords.join('|')})\\b`, 'gi');
@@ -64,7 +64,7 @@ const CompanyProfile = ({cardid}) => {
    
 
     useEffect(() => {
-        setLoading(true)
+        setLoading(true)   
         getDetails()
         getFeedback()
     },[cardid])

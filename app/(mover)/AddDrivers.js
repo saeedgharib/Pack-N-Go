@@ -1,5 +1,5 @@
 // screens/AddDriverForm.js
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
@@ -38,12 +38,23 @@ const AddDriverForm = () => {
     const regex = /^\d{5}-\d{8}$/; // Regex to match the format 13504-98352793
     return regex.test(id);
   };
+useEffect(() => {
+  getPermissionsAsync()
+}, )
 
+const getPermissionsAsync=async()=>{
+  const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert('Permission to access camera is required!');
+      return;
+    }
+}
   // Function to request permission and take a photo
   const handleTakePhoto = async () => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResult.granted) {
       alert('Permission to access camera is required!');
+      
       return;
     }
     

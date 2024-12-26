@@ -126,6 +126,26 @@ const TabsPage = () => {
         redirect={!isSignedIn}
       />
       <Tabs.Screen
+        name='ShowCars'
+        options={{
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <DrawerToggleButton/>,
+          
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
+        name='OrderDetails'
+        options={{
+          href:null,
+          headerRight: () => <LogoutButton />,
+          headerLeft: () => <DrawerToggleButton/>,
+          
+        }}
+        redirect={!isSignedIn}
+      />
+      <Tabs.Screen
         name='EditInventory'
         
         options={{

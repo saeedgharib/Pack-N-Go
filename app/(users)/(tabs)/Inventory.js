@@ -98,7 +98,7 @@ const Inventory = () => {
          
       </View>
               <Paragraph style={{fontWeight:'bold'}} >Pickup Address: <Text style={styles.details}>{item.pickupLocation.address}</Text></Paragraph>
-              <Paragraph style={{fontWeight:'bold'}}>DropOff Address: <Text  style={styles.details}>{item.dropffLocation.address}</Text></Paragraph>
+              <Paragraph style={{fontWeight:'bold'}}>DropOff Address: <Text  style={styles.details}>{item.dropoffLocation?.address}</Text></Paragraph>
               <Paragraph style={{fontWeight:'bold'}}>Status: <Text  style={styles.details}>{item.status}</Text></Paragraph>
               {/* <Paragraph>Insurance: {mover.insuranceDetails}</Paragraph> */}
             </Card.Content>

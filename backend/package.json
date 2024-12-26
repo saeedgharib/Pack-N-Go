@@ -12,7 +12,9 @@
   "dependencies": {
     "body-parser": "^1.20.3",
     "express": "^4.21.1",
+    "firebase-admin": "^13.0.1",
     "nodemon": "^3.1.7",
+    "resend": "^4.0.1",
     "stripe": "^17.2.1"
   }
 }

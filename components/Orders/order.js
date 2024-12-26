@@ -739,10 +739,10 @@ import { storage } from "../../database/firebaseConfig";
 import Spinner from "react-native-loading-spinner-overlay";
 import * as FileSystem from 'expo-file-system';
 import { useLocalSearchParams } from "expo-router";
-
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const JobListingForm = ({ proceed }) => {
-  let imageUrl = '';
+  let imageUrl = ''
  const { clearData } = useLocalSearchParams()
   const [formData, setFormData] = useState({
     image:imageUrl||"",
@@ -756,7 +756,7 @@ const JobListingForm = ({ proceed }) => {
       name: "",
       address: "",
     },
-    dropffLocation: {
+    dropoffLocation: {
       placeId: "",
       latitude: "",
       longitude: "",
@@ -778,52 +778,22 @@ const JobListingForm = ({ proceed }) => {
 
   const [loading,setLoading] = useState(null);
 
-  
-  const handleInputChange = (name, value) => {
-    setFormData({ ...formData, [name]: value });
-  };
+  // useEffect(() => {
+  //   setImage(null);
+  // })
+  // useEffect(() => {
+  //   if(image){
+  //     uploadImage()
+  //   }
+  // },[image])
 
-  const proceedNext = async() => {
-setLoading(true)
-    // try {
 
-      
-    //     // const licenseRef = ref(storage, `drivers/${name}_license`);
-    //     // const img = await fetch(licenseImage);
-    //     // const bytes = await img.blob();
-    //     // await uploadBytes(licenseRef, bytes);
-
-    //     // const imageRef = ref(storage, `/furnitures/images/fur2_image`);
-    //     // const img = await fetch(image);
-    //     // const bytes = await img.blob();
-    //     //  // Unique image name
-    //     // await uploadBytes(imageRef, bytes);
-    //     // imageUrl = await getDownloadURL(imageRef);
-      
-    // }catch (error) {
-    //   console.log(error)
-      
-    // }
-    setFormData({ ...formData, image:imageUrl});
-    console.log(formData);
-    proceed(formData);
-    setLoading(false)
-}
-
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setImage(result.assets[0].uri)
-      
-    }
-    
-  };
+  useEffect(() => {
+    console.log("State has updated:", formData); // This runs after 'state' changes
+  }, [formData]);
+  // useEffect(() => {
+  //   console.log("State has updated:", formData); // This runs after 'state' changes
+  // }, [formData]);
 
   useEffect(() => {
     if (clearData === 'true') {
@@ -846,6 +816,74 @@ setLoading(true)
       setImage(null);
     }
   }, [clearData]);
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri)
+    }
+    
+  };
+
+  const handleInputChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const proceedNext = async() => {
+    if (!formData.fullName || formData.fullName.trim() === "") {
+      alert("fill all the fields.");
+      return
+    }
+    
+setLoading(true)
+let downloadURL = ''
+    if(!formData.fullName){
+      enter
+    }
+    try {
+      
+      // uploadImage()
+        // setFormData({ ...formData, image:downloadURL});
+        // console.log("form"+formData.image);
+        
+      
+      
+//     // //     // const licenseRef = ref(storage, `drivers/${name}_license`);
+//     // //     // const img = await fetch(licenseImage);
+//     // //     // const bytes = await img.blob();
+//     // //     // await uploadBytes(licenseRef, bytes);
+
+//     //     const imageRef = ref(storage, `/furnitures/images/fur2_image`);
+//     //     const img = await fetch(image);
+//     //     const bytes = await img.blob();
+//     //      // Unique image name
+//     //     await uploadBytes(imageRef, bytes);
+//     //     imageUrl = await getDownloadURL(imageRef);
+      
+proceed(formData);
+
+setLoading(false)
+    }catch (error) { 
+      console.log(error)
+      
+    }
+//     console.log(formData);
+    
+    
+//     }catch (error) {
+// console.log(error);
+
+//     }
+console.log("proceeding to next page...");
+
+}
+
+
 
 
   
@@ -859,66 +897,82 @@ setLoading(true)
 
   const DateTime = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setDateText(currentDate)
-    // setShowDate(false);
-    
-    setDate(currentDate);
-    formData.moveDate = currentDate;
     let tempDate = new Date(currentDate);
-    let fDate =
+    if(showDate){
+
+      setDateText(currentDate)
+      // setShowDate(false);
+      
+      setDate(currentDate);
+      let fDate =
       tempDate.getDate() +
       "/" +
       (tempDate.getMonth() + 1) +
       "/" +
       tempDate.getFullYear();
-    let fTime = tempDate.getHours() + ": " + tempDate.getMinutes();
-    formData.moveTime = fTime;
-    setDateText(fDate);
-    setTimeText(fTime);
-    console.log("formdate",formData.moveTime);
-    
-  };
+      setDateText(fDate.toString());
+      console.log(fDate.toString()); 
+      formData.moveDate = currentDate;
+      setShowDate(false)
+    }
+    if(showTime) {
+      
+      let fTime = tempDate.getHours() + ": " + tempDate.getMinutes();
+      formData.moveTime = fTime;
+      
+      setTimeText(fTime.toString()); 
+      console.log("formdate",formData.moveTime);
+      setShowTime(false)
+    }
+
+    // setShowDate(false);
+    // setShowTime(false);
+  }; 
 
   const showMode = (currentMode) => {
     if (currentMode == "date") {
       setShowDate(true);
+      // setShowTime(false);
     } else if (currentMode == "time") {
       setShowTime(true);
+      // setShowDate(false);
     }
   };
 
+console.log("date:",Datetext)
   const uploadImage = async () => {
     if (image==null) return;
     
-    setLoading(true);
     try {
-        
-        const response = await fetch(image)
-        const blob = await response.blob();
-        const imageName = new Date().getTime() + "_image";  // Unique image name
-  
-       
-        const storageRef = ref(storage, `images/${imageName}`);
-  
-        // Upload the image
-        const snapshot = await uploadBytes(storageRef, blob);
-  
-       try {
-         const downloadUrl = await getDownloadURL(snapshot.ref);
-         setImageUrl(encodeURIComponent(downloadUrl))
-          console.log("Image URL ",imageUrl);
+        if(image){
+
+          const response = await fetch(image)
+          const blob = await response.blob();
+          const imageName = new Date().getTime() + "_image";  // Unique image name
           
-       } catch (error) {
-        
-       }
+          
+          const storageRef = ref(storage, `furniture/images/${imageName}`);
+          
+          // Upload the image
+          const snapshot = await uploadBytes(storageRef, blob);
+          imageUrl= await getDownloadURL(snapshot.ref);
+          
+          console.log(imageUrl);
+          
+        }
+        //  setImage(encodeURIComponent(imageUrl))
+          console.log("Image URL ",imageUrl);
+          // imageUrl = imageUrl;
+          
+
         console.log(imageUrl);
         
         setFormData((prevData) => ({
           ...prevData,
           image: imageUrl
         }));
-        setLoading(false);
-        // return ImageUrl;
+      
+        return imageUrl;
         
     } catch (error) {
       console.log("upload image method error",error);
@@ -1005,11 +1059,12 @@ setLoading(true)
         <TextInput
           style={styles.DateTimeinput}
           editable={false}
-          placeholder={Datetext || "Select a date"}
+          placeholder={String(formData.moveDate)|| "Select a date"}
           placeholderTextColor="#999"
         />
         <TouchableOpacity onPress={() => showMode("date")}>
-          <FontAwesome name="calendar" size={24} color="green" />
+          {/* <FontAwesome name="calendar" size={24} color="green" /> */}
+          <MaterialIcons name="edit-calendar" size={24} color="green" />
         </TouchableOpacity>
       </View>
       {showDate && (
@@ -1018,7 +1073,8 @@ setLoading(true)
           value={date}
           mode="date"
           is24Hour={true}
-          // display="default"
+          // timeZoneName={'karachi'}
+          display="calender"
           onChange={DateTime}
           style={{ marginLeft: 90 }}
           minimumDate={new Date()}
@@ -1028,7 +1084,7 @@ setLoading(true)
       <View style={styles.buttonContainer}>
         <TextInput
           style={styles.DateTimeinput}
-          placeholder={Timetext || "Select Time"}
+          placeholder={String(formData.moveTime) || "Select Time"}
           editable={false}
           placeholderTextColor="#999"
         />

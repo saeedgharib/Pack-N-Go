@@ -44,7 +44,7 @@ const AdminTabsPage = () => {
     }} redirect={!isSignedIn} /> 
 
     <Stack.Screen name='Stats' options={{
-      title: 'App Statistics',
+      title: 'Orders',
       
     }} redirect={!isSignedIn} /> 
 

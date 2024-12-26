@@ -29,10 +29,11 @@ export default AdminDashboard = () => {
   </View>
     <View style={styles.container}>
       <TouchableOpacity style={styles.menuBox} onPress={()=>router.push('/Users' )}>
-        <Image
-          style={styles.icon}
-          source={{ uri: 'https://img.icons8.com/?size=100&id=psevkzUhHRTs&format=png&color=000000' }}
-        />
+      <Image
+  style={styles.icon}
+  source={{ uri: 'https://img.icons8.com/?size=100&id=psevkzUhHRTs&format=png&color=000000' }}
+  defaultSource={require('../../assets/images/logo.jpg')}
+/>
         <Text style={styles.info}>Manage Users</Text>
       </TouchableOpacity>
 
@@ -44,7 +45,7 @@ export default AdminDashboard = () => {
         <Text style={styles.info}>Manage Movers</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.menuBox} onPress={()=>router.push('Stats' )}>
+      <TouchableOpacity style={styles.menuBox} onPress={()=>router.push('OrderStats' )}>
         <Image
           style={styles.icon}
           source={{ uri: 'https://img.icons8.com/color/70/000000/pie-chart.png' }}
@@ -55,33 +56,34 @@ export default AdminDashboard = () => {
       <TouchableOpacity style={styles.menuBox}>
         <Image
           style={styles.icon}
-          source={{ uri: 'https://img.icons8.com/color/70/000000/shop.png' }}
+          source={{ uri: 'https://img.icons8.com/?size=100&id=Tys9Kx3DE6tD&format=png&color=000000' }}
         />
-        <Text style={styles.info}>Shop</Text>
+        <Text style={styles.info}>Transactions
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.menuBox}>
         <Image
           style={styles.icon}
-          source={{ uri: 'https://img.icons8.com/color/70/000000/product.png' }}
+          // source={{ uri: 'https://img.icons8.com/color/70/000000/product.png' }}
         />
-        <Text style={styles.info}>Product</Text>
+        <Text style={styles.info}>...</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.menuBox}>
         <Image
           style={styles.icon}
-          source={{ uri: 'https://img.icons8.com/color/70/000000/traffic-jam.png' }}
+          // source={{ uri: 'https://img.icons8.com/color/70/000000/traffic-jam.png' }}
         />
-        <Text style={styles.info}>Order</Text>
+        <Text style={styles.info}>...</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.menuBox}>
         <Image
           style={styles.icon}
-          source={{ uri: 'https://img.icons8.com/dusk/70/000000/visual-game-boy.png' }}
+          // source={{ uri: 'https://img.icons8.com/dusk/70/000000/visual-game-boy.png' }}
         />
-        <Text style={styles.info}>Info</Text>
+        <Text style={styles.info}>...</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.menuBox}>
@@ -107,6 +109,7 @@ export default AdminDashboard = () => {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 40,
+    flex:1,
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
@@ -114,8 +117,8 @@ const styles = StyleSheet.create({
     // backgroundColor: '#DCDCDC',
     backgroundColor: '#030d1c',
     borderRadius:20,
-    width: 180,
-    height: 200,
+    width: 150,
+    height: 180,
     alignItems: 'center',
     justifyContent: 'center',
     margin: 12,
@@ -123,11 +126,18 @@ const styles = StyleSheet.create({
       shadowOpacity: 0.5,
       shadowOffset: { width: 1, height: 2 },
   },
-  icon: {
+  icon1: {
     width: 60,
     height: 60,
     padding:40,
     marginBottom:20,
+  },
+  icon: {
+    width: 100,
+    height: 10,
+    padding:40,
+    marginBottom:20,
+    
   },
   info: {
 

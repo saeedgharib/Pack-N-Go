@@ -41,7 +41,7 @@ const StarRating = ({ maxStars = 5, moverRating }) => {
     justifyContent: 'center',
   }}>
         {Array.from({ length: maxStars }, (_, index) => (
-          <TouchableOpacity key={index} onPress={() => handlePress(index)}>
+          <TouchableOpacity key={index}>
             <Icon
               name={index < moverRating ? 'star' : 'star-o'}
               size={30}
@@ -389,11 +389,11 @@ const ListMovers = () => {
           value={searchText}
           onChangeText={handleSearch}
         />
-        <View style={styles.sortButtonContainer}>
+        {/* <View style={styles.sortButtonContainer}>
           <Pressable style={styles.button} onPress={handleSortByFare}>
             <Text style={styles.buttonText}>Sort by Fare: Low to High</Text>
           </Pressable>
-        </View>
+        </View> */}
         <Divider />
         <FlatList
           data={filteredMovers}

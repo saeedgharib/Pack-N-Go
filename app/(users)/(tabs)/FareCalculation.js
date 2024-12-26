@@ -11,7 +11,7 @@ import { Card, Text } from "react-native-paper";
 import { doc, getDoc,updateDoc } from "firebase/firestore";
 import DB from "../../../database/firebaseConfig";
 import { TouchableOpacity } from "react-native";
-const logo = require("../../../assets/images/logo.jpg");
+const logo = require("../../../assets/company3.png");
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
 
@@ -22,11 +22,11 @@ const CompanyFare = () => {
 
   const [pickupLocation, setPickupLocation] = useState("");
   const [dropoffLocation, setDropoffLocation] = useState("");
-  const [distance, setDistance] = useState(null);
+  const [distance, setDistance] = useState(null); 
   const [duration, setDuration] = useState(null);
   const [moverDetail, setMoverDetail] = useState();
   const [fare, setFare] = useState(null);
-  const key = "AIzaSyAYeGNKtmSfCfM3g_ierecr8Yefjq8YvQI";
+  const key = "AIzaSyC6kkz9yNjthTzu8vGULBRafD-4B1Hnc_o";
   console.log(key);
 
   useEffect(() => {
@@ -59,11 +59,11 @@ const CompanyFare = () => {
 
       if (docSnap.exists()) {
         console.log("Document data:", docSnap.data());
-      }
-      console.log(docSnap.data().dropffLocation.address);
+      } 
+      console.log(docSnap.data().dropoffLocation.address);
       setPickupLocation(docSnap.data().pickupLocation);
-      setDropoffLocation(docSnap.data().dropffLocation);
-    } catch (error) {
+      setDropoffLocation(docSnap.data().dropoffLocation);
+    } catch (error) { 
       console.error("Error fetching JobListing: ", error);
     }
   };
@@ -105,7 +105,7 @@ const CompanyFare = () => {
   // Simple fare calculation
   const calculateFare = (distance) => {
     const farePerKm = 30;
-    const averageDriverPay=300;
+    const averageDriverPay=2;
      // Example fare rate per kilometer
     return distance *( farePerKm+ averageDriverPay+carFare);
   };
@@ -113,7 +113,7 @@ const CompanyFare = () => {
   const [publishableKey, setPublishableKey] = useState("");
 
   const fetchPublishableKey = async () => {
-    const response = await fetch("http://192.168.1.19:3000/pubkey", {
+    const response = await fetch("http://192.168.1.26:3000/pubkey", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -127,17 +127,21 @@ const CompanyFare = () => {
   };
 
   const fetchPaymentSheetParams = async () => {
-    const total = fare;
+    const total = fare ;
     try {
-      const response = await fetch("http://192.168.177.194:3000/payment-sheet", {
+      const response = await fetch("http://192.168.1.26:3000/payment-sheet", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         }, 
         body: JSON.stringify({ total: total }),
       });
+      console.log('====================================');
+      console.log({response});
+      console.log('====================================');
       const { paymentIntent, ephemeralKey, customer } = await response.json();  
-   
+      console.log("paymentIntent"+{paymentIntent});
+       
       return {  
         paymentIntent,
         ephemeralKey,
@@ -147,9 +151,13 @@ const CompanyFare = () => {
   };
 
   const initializePaymentSheet = async () => {
-    const { paymentIntent, ephemeralKey, customer } =
-      await fetchPaymentSheetParams();
-
+    const { paymentIntent, ephemeralKey, customer } = await fetchPaymentSheetParams();
+      if (!paymentIntent || !ephemeralKey || !customer) {
+        console.error("Payment sheet initialization failed. Missing params.");
+        alert("Error: Could not initialize payment sheet.");
+        return;
+      }
+    
     const { error } = await initPaymentSheet({
       merchantDisplayName: "Example, Inc.",
       customerId: customer,
@@ -158,10 +166,10 @@ const CompanyFare = () => {
       // Set `allowsDelayedPaymentMethods` to true if your business can handle payment
       //methods that complete payment after a delay, like SEPA Debit and Sofort.
       allowsDelayedPaymentMethods: true,
-      defaultBillingDetails: {
+      defaultBillingDetails: {  
         name: "Jane Doe",
-      },
-      returnURL: "http://localhost:3000",
+      }
+      // returnURL: "http://localhost:3000",
     });
     if (!error) {
       setLoading(true);
@@ -209,7 +217,7 @@ const updateJobListing = async () => {
       <View style={styles.container}>
         <Card style={styles.companyCard}>
           <Card.Title title={moverDetail?.companyName} /> 
-          <Card.Cover source={{ uri: logo }} style={styles.companyLogo} />
+          {/* <Card.Cover source={{ uri: logo ||"../../"}} style={styles.companyLogo} /> */}
           <Card.Content>
             <Text>{moverDetail?.email}</Text>
           </Card.Content>
@@ -231,26 +239,26 @@ const updateJobListing = async () => {
             placeholder="Dropoff Location"
           />
         </View>
-
+ 
         {fare !== null && (
           <Card style={styles.fareCard}>
-            <Image
+            {/* <Image
               source={{ uri: require("../../../assets/images/logo.jpg") }}
               style={styles.fareCardBackground}
-            />
+            /> */}
             <Card.Content>
               <Text style={styles.fareText}>
                 Distance: {distance?.toFixed(2)} km
               </Text>
-              <Text style={styles.fareText}>Fare: {fare.toFixed(2)}PKR</Text>
-              <Text style={styles.fareText}>Duration:{duration}mins</Text>
-            </Card.Content>
-          </Card>
+              <Text style={styles.fareText}>Fare: {fare||"45000"}PKR</Text>
+              {/* <Text style={styles.fareText}>Duration:{duration?.toFixed(3)}mins</Text> */}
+            </Card.Content> 
+          </Card>  
         )}
         <TouchableOpacity
           style={{
             backgroundColor: "green",
-            margin: 10,
+            margin: 10, 
             padding: 10,
             borderRadius: 20,
           }}
@@ -304,7 +312,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   fareCardImage: {
-    opacity: 0.2,
+    opacity: 0.2, 
   },
   fareCard: {
     width: "100%",

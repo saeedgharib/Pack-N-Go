@@ -82,7 +82,7 @@ const Dashboard = () => {
         </Button>
         
       </View>
-      <Text style={styles.sectionTitle}>Assigned Jobs</Text>
+      <Text style={styles.sectionTitle}>Orders</Text>
       <FlatList
         data={assignedJobs}
         keyExtractor={(item) => item.id}
@@ -100,13 +100,7 @@ const Dashboard = () => {
         )}
         ListEmptyComponent={<Text>No assigned jobs.</Text>}
       />
-      <Button
-        mode="contained"
-        onPress={() => router.push('/mover/addJob')}
-        style={styles.addButton}
-      >
-        Add Job
-      </Button>
+     
     </View>
   );
 };
